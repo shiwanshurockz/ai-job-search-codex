@@ -119,3 +119,13 @@ company_research/*.json
 
 # Brainstorm mockups (superpowers visual companion) - never ship
 .superpowers/
+
+# Local job-search runtime downloads (not source code)
+/.local-tools/
+
+# Browser dependency packages; sessions/screenshots live under .local-tools
+/tools/browser/node_modules/
+
+# Machine-local MCP paths; generate with tools/configure-application-browser.ps1
+/.codex/config.toml
+!/tools/browser/bun.lock

@@ -420,3 +420,10 @@ Check whether the posting or the portal it came from asks for free-text fields t
 ### Next Steps
 - **Submitted?** `/outcome <company>` moves the `drafted` row to `applied` and starts the per-application record that `/setup` later uses to calibrate the fit framework.
 - **Interview scheduled?** `/interview` builds a stage-specific prep pack from this posting and the documents you just created.
+
+### Browser application handoff
+When the user wants the application filled in a portal, continue with
+`.claude/commands/submit.md` after the document checks above. That workflow fills
+forms and uploads selected documents, pauses for final user review, and records
+`applied` only after the employer site confirms receipt. The default drafting-only
+path remains available.

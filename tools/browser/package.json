@@ -1,0 +1,9 @@
+{
+  "name": "job-application-browser",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local browser tools for review-before-submit job applications",
+  "dependencies": {
+    "@playwright/mcp": "0.0.83"
+  }
+}
