@@ -1,106 +1,222 @@
-# Using this workspace with Codex
+# Job search and applications with Codex
 
-This repository is an instruction-driven job search workspace, with Python helpers and Bun-based portal search tools. Codex follows AGENTS.md, which routes requests to the existing canonical workflows under .claude/. No Anthropic API replacement is required for those helpers.
+This fork adds a Codex entry point and a browser-assisted application workflow to
+the original job-search framework. Claude Code is not required for the Codex path.
+The `.claude/` directory remains the shared source of workflow instructions;
+`AGENTS.md` tells Codex how to use those files.
 
-## Start in the repository
+## What was already here, and what we added
 
-In your UCRT64 terminal:
+| Capability | Original framework | Added in this fork |
+|---|---|---|
+| Profile setup | Imports a resume and collects preferences | Codex follows the same setup instructions |
+| Search and ranking | Portal CLIs, deduplication, fit evaluation | Codex routing and Windows runtime discovery |
+| `/apply` | Evaluates a posting, drafts/reviews CV and cover letter, verifies PDFs, records a draft | Handoff to the new browser submission workflow |
+| Form answers | Drafts text for the candidate to paste | Browser fills observed fields and uploads selected PDFs |
+| Final submission | Candidate submits outside the drafting workflow | Codex pauses for final review, then submits only with explicit approval |
+| Application tracking | `/outcome` records application progress | Browser receipt establishes when a draft can be marked `applied` |
 
-```bash
-cd ~/Videos/Code/ai-job-search-codex
-codex
-```
+**The new feature is `.claude/commands/submit.md`, not the original `/apply` command.**
+Its default mode is **fill -> upload -> review -> approve -> submit -> verify receipt**.
+In Codex, use natural-language prompts below. `/apply` and `/submit` are workflow
+names; Claude-style slash commands are not automatically registered in Codex.
+`/mcp` is a Codex command for checking the connected browser tools.
 
-Or open this folder as the project in the Codex desktop app. Use natural-language requests below; the original Claude slash commands are not assumed to be installed in Codex.
+## Start an already configured checkout
 
-## Set up prerequisites
+1. Open PowerShell or Command Prompt in this repository.
+2. Run the launcher:
 
-Verify a real Python 3.10+ installation, Bun, and the LaTeX executables lualatex and xelatex. See SETUP.md for the existing dependency instructions and TeX packages. Skip its Claude Code installation section when using Codex. Dependencies available in UCRT64 may differ from the desktop app's PATH.
+   ```powershell
+   .\Start-JobSearch.cmd
+   ```
 
-Preview portal dependency installation, then install when ready:
+3. If prompted, review the folder-trust request and trust your own checkout.
+4. In Codex, run `/mcp` and check that `job_application_browser` is available.
+5. Use the search prompt below. You do not need to import the resume again if your
+   local profile is already populated.
 
-```bash
-python tools/install_portal_clis.py --dry-run
-python tools/install_portal_clis.py
-```
+The launcher finds Codex on PATH or falls back to the installed desktop app binary.
+For the desktop-bundled binary it adds `--no-daemon`, avoiding the "no complete local
+package" startup error. It also adds available local Bun and desktop-bundled
+Python/Git/PDF tools to that session's PATH. It does not change the global PATH.
 
-Do not use example profile values as facts. Before committing or pushing a populated profile, remember that profile files are tracked; use a private destination for personal information.
-
-## First application
-
-1. Put source resume files into documents/cv/ (see documents/README.md for other supported sources).
-2. Ask: "Follow the setup workflow and build my profile from documents/. Ask me for missing facts and my target roles, locations, and work preferences."
-3. Ask: "Evaluate this job against my profile: <URL or pasted description>."
-4. After reviewing the fit assessment, ask: "Prepare the tailored CV and cover letter, perform the review, compile the PDFs, and verify the output."
-5. Ask Codex to prepare the employer form with the browser submission workflow, review it, and approve the final submission. Record an outcome only after confirmed receipt.
-
-The apply workflow generates and tracks drafts. To fill an employer form and submit after final review, continue with the browser submission workflow described below.
-
-## Search and follow-up
-
-Ask "Search for jobs matching my profile", "Rank the saved jobs", "Prepare me for this interview", or "Generate my application dashboard". Four bundled portals target Denmark; LinkedIn and FreeHire support broader searches. Set your actual geography and preferences during setup. Direct job URLs and pasted descriptions also work without portal search installation.
-
-## Compatibility limits
-
-The Codex adapter is in AGENTS.md. Claude permissions, hooks, slash command registration, and tool names are not imported into Codex. Available Codex tools and permissions still determine which steps can execute. Independent reviewer agents, web access, PDF rendering, and optional Gmail/Notion integrations require their respective capabilities. Missing capabilities must be reported rather than treated as successful checks.
-
-## Windows launcher (configured for this checkout)
-
-From PowerShell in the repository, run:
-
-```powershell
-.\Start-JobSearch.cmd
-```
-
-Check dependencies without opening an interactive session:
+Check tool availability without starting a chat:
 
 ```powershell
 .\Start-JobSearch.cmd -Check
 ```
 
-The launcher finds an installed Codex executable, including the desktop app's bundled executable when Codex is absent from PATH. It adds this repository's local Bun and the desktop app's bundled Python/Git/PDF tools to the child session PATH when present. It does not change the global PATH or the system execution policy. These desktop runtime paths are machine-specific and may change after app updates; the dependency check reports missing tools.
+## Step 1: Find and rank jobs
 
-LaTeX must be installed separately for the stock CV and cover letter PDF compilation. The launcher does not treat missing LaTeX as a successful PDF setup.
+Paste this into Codex:
 
-## Dependency setup
+```text
+Read AGENTS.md and my saved candidate profile and search preferences. Follow the
+repository's search and ranking workflows. Find jobs in my target roles, cities,
+and work arrangement, preferably posted within the last 14 days.
 
-Install Python 3.10+, Bun, Node.js 18+, and Chrome if they are not already available.
-The Windows launcher can also reuse supported desktop-bundled runtimes.
-LinkedIn and FreeHire need Bun but have no runtime package dependencies.
+Use the installed search tools and employer career pages. Remove duplicates and
+check that shortlisted listings are still open. Rank the top 10 against my actual
+experience. Show company, role, location, verified work arrangement, posting date,
+fit score, matching skills, gaps, experience requirements, and a direct job link.
+Flag unknown information instead of guessing. Distinguish overall software
+experience from years of experience with a particular AI technology.
 
-Install the browser integration and register it for this checkout:
-
-```powershell
-bun install --cwd tools/browser --ignore-scripts
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/configure-application-browser.ps1
+Only search and rank. Do not fill forms, upload documents, or submit applications.
+Let me select the jobs to apply for.
 ```
 
-For generated PDFs, install MiKTeX with `winget install --id MiKTeX.MiKTeX -e`
-or its official installer. Follow SETUP.md's Windows Basic MiKTeX section for
-required template packages. Restart the terminal and run `Start-JobSearch.cmd -Check`.
-Never treat missing LaTeX as successful PDF verification.
+Search results are candidates for review, not verified offers or automatically
+approved applications. Review the shortlist and select a specific role/link.
 
-### Desktop-bundled CLI startup
+## Step 2: Select the job and documents
 
-The launcher automatically supplies `--no-daemon` when using the desktop app's bundled executable. That executable lacks the complete standalone package needed to launch its shared background server. This flag runs the interactive CLI in-process and also supports resume/fork. Explicit remote connections and the `agents` command are left unchanged because they require server mode. A separately installed CLI retains its default behavior.
+Choose one of the following prompts.
 
-## Fill forms and submit after your review
+**Use an existing resume PDF (does not require LaTeX):**
 
-Restart Codex using `Start-JobSearch.cmd`, trust this repository, and run `/mcp`.
-The `job_application_browser` server should be listed. It uses the installed Chrome
-browser and a separate local login profile. You handle login/MFA/CAPTCHA in its window.
+```text
+Prepare my application for <JOB URL>. Evaluate the fit first. Use my existing
+resume PDF at <REPO-RELATIVE PDF PATH>; do not change its claims. Follow the browser
+submission workflow in .claude/commands/submit.md. Ask me for missing screening
+answers, fill the form, and upload only the documents I selected. Pause at the
+final review before submitting.
+```
 
-Ask: "Prepare the application for <job URL>, fill the form, and pause for my review
-before submitting." Select the resume PDF to use (your original resume can be used
-without LaTeX if you explicitly choose it). Codex asks for missing screening answers,
-uploads only selected documents, presents the final form, and waits for your approval.
-Uploads/autosave may send entered information before the final submission.
+**Create tailored materials first (requires a working PDF toolchain):**
 
-Browser implementation: Microsoft Playwright MCP 0.0.83, installed under tools/browser.
-Configuration: .codex/config.toml (generated locally and ignored by Git; rerun the
-configuration script after moving the repository, following its existing-file guidance). Browser sessions and output are kept in ignored .local-tools/.
-Review packets are in ignored documents/applications/<archive>/submission_review.json.
+```text
+Evaluate <JOB URL> against my profile, then follow the apply workflow to prepare
+and review a tailored CV and cover letter. Compile and verify the PDFs before
+using them. After the documents are ready, follow the browser submission workflow
+to fill the application. Pause for my final review before submitting.
+```
 
-The review helper validates file hashes and records approval; final-click discipline
-is enforced by the agent workflow, not a browser security boundary. Portal support is
-best-effort and may need manual steps. A click alone never marks an application applied.
+Replace `<JOB URL>` and `<REPO-RELATIVE PDF PATH>` with the real values. If several
+resume files exist, select the exact one. The workflow must not upload an arbitrary
+file or treat uncompiled TeX as a resume PDF.
+
+## Step 3: Complete login and missing answers
+
+The browser opens a separate Chrome profile for applications. Handle login, MFA,
+CAPTCHA, account creation, or identity checks yourself in that window when needed.
+The profile persists locally under `.local-tools/application-browser/`.
+
+Codex fills only facts supported by your profile or answers. It asks when a form
+needs information not yet confirmed: salary, work authorization, sponsorship,
+joining date, technology-specific experience, or custom screening answers.
+Optional sensitive fields and consent choices are not guessed.
+
+Entering fields and uploading documents may transmit information through portal
+autosave before the final Submit action. Review the employer/destination first.
+
+## Step 4: Review, approve, and confirm receipt
+
+Codex presents the company/role, application URL, attachments, completed answers,
+remaining questions, and the final review page. It then waits for your response.
+
+To revise, say what to change. To approve, explicitly identify the application:
+
+```text
+I reviewed the application for <ROLE> at <COMPANY>. Submit it as shown.
+```
+
+Approval applies to that reviewed application. Changed answers, attachments, or
+URLs require another review. Codex clicks Submit once and checks for a receipt or
+confirmed portal status. A click or timeout alone is not proof of submission.
+If the result is ambiguous, it checks status before attempting anything again.
+Only confirmed receipt allows the tracker to move from `drafted` to `applied`.
+
+## First-time setup for a fresh clone
+
+A fresh clone contains template profiles, not another person's private profile.
+
+1. Install/sign in to Codex CLI, or install the Codex desktop app for the launcher
+   fallback. Install Python 3.10+, Bun, Node.js 18+, and Chrome as needed. The Windows
+   launcher can reuse supported desktop-bundled runtimes when present.
+2. From the repository root, install browser dependencies and generate local MCP
+   configuration:
+
+   ```powershell
+   bun install --cwd tools/browser --ignore-scripts
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools/configure-application-browser.ps1
+   ```
+
+   The script preserves an existing `.codex/config.toml`. If moving the checkout,
+   follow its printed guidance to update the browser command path and working
+   directory; it does not silently overwrite your configuration.
+3. LinkedIn and FreeHire run with Bun without runtime package installation. For
+   other portal/development dependencies, preview then run:
+
+   ```powershell
+   python tools/install_portal_clis.py --dry-run
+   python tools/install_portal_clis.py
+   ```
+
+4. Put your resume in `documents/cv/`, start Codex, and ask:
+
+   ```text
+   Follow the setup workflow and build my profile from documents/cv/. Ask for
+   missing facts, target roles, locations, work preferences, and working languages.
+   Keep my personal data local; do not commit or push it.
+   ```
+
+5. For new tailored PDFs, install a LaTeX distribution with `lualatex` and `xelatex`.
+   On Windows, use MiKTeX's installer or `winget install --id MiKTeX.MiKTeX -e`.
+   Follow [SETUP.md](SETUP.md)'s Windows Basic MiKTeX section for template packages.
+   Restart the terminal and check `Start-JobSearch.cmd -Check`. Existing selected
+   resume PDFs do not need a LaTeX installation.
+
+## Files added or adapted
+
+| File | Purpose |
+|---|---|
+| `AGENTS.md` | Maps natural-language Codex requests to shared workflows |
+| `Start-JobSearch.cmd` / `Start-JobSearch.ps1` | Windows launcher, runtime discovery, desktop `--no-daemon` fallback |
+| `.claude/commands/submit.md` | Form preparation, final-review pause, submission, and receipt workflow |
+| `.claude/commands/apply.md` | Handoff from verified documents to browser preparation |
+| `tools/browser/package.json` and `bun.lock` | Pinned Microsoft Playwright MCP dependency |
+| `tools/configure-application-browser.ps1` | Generates checkout-specific MCP configuration |
+| `tools/start-application-browser.ps1` | Starts the browser tools with a separate local Chrome profile |
+| `tools/application_review.py` | Builds/checks review packets and records approval tied to document and answer hashes |
+| `tests/test_application_review.py` | Tests missing answers, stale approvals, changed files/destinations, and path validation |
+| `tools/test_application_browser.py` | Local-only Chrome form-fill/upload smoke test, without submitting |
+| `.gitignore` | Excludes browser sessions, local MCP paths, and downloaded runtime files |
+| `CLAUDE.md` | Agent-neutral wording and factual AI-tool claims; populated profile stays local |
+
+## Records and privacy
+
+Per-application answers, review packets, attempts, and receipt evidence are saved in
+`documents/applications/<archive>/`. Browser sessions/output stay in `.local-tools/`.
+These locations are ignored by Git, as is `.codex/config.toml`.
+
+**Profile and template files are still tracked by Git.** Populating them makes local
+personal changes; an ignore rule does not hide changes to already tracked files.
+Keep those changes out of code commits and public pushes. The reusable code commit
+does not include your resume, populated profile, or private search preferences.
+
+## Validation and practical limits
+
+The implementation was checked with 40 passing Python tests (one additional test
+skipped), plus a real Chrome test against a local form that filled fields, uploaded
+a test PDF, read back values, and verified zero submissions. These checks do not
+establish compatibility with every employer portal. No real application was sent
+as part of development or testing.
+
+The review helper checks recorded state and hashes; it does not intercept browser
+clicks. The explicit final-review rule is part of the agent workflow. Portal changes,
+unsupported widgets, login requirements, assessments, and anti-bot checks can require
+manual work. Missing capabilities must be reported, not treated as successful steps.
+
+To rerun the focused checks from a configured terminal:
+
+```powershell
+python -m unittest discover -s tests -p test_application_review.py
+python tools/test_application_browser.py
+```
+
+If the browser is missing from `/mcp`, run the configuration script, trust the checkout,
+and restart Codex. If dependencies are missing, reinstall `tools/browser` as above.
+Never mark a PDF verified merely because the source file exists, and never mark an
+application applied merely because its form was filled.

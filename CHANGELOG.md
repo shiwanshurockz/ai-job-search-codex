@@ -15,6 +15,20 @@ per-file diff commands.
 
 ### Added
 
+- **Codex fork integration (2026-10-25):** `AGENTS.md` workflow routing, Windows
+  launchers with desktop-bundled `--no-daemon` support, and agent-neutral factual
+  AI-tool guidance. Existing `.claude/` specifications remain canonical.
+- **Browser application preparation and reviewed submission:** new `submit.md`
+  workflow, pinned Playwright MCP browser tools, local configuration generator,
+  review packets with attachment/answer hashes, a mandatory final user-review pause,
+  and receipt-based handoff to the existing application tracker. The original
+  `/apply` document-generation workflow now links to this submission workflow.
+- **Submission checks and usage documentation:** review-packet unit tests, a local
+  Chrome form-fill/upload smoke test that does not submit, and `CODEX_SETUP.md`
+  with search, selection, preparation, approval, privacy, and troubleshooting steps.
+  Populated personal profiles and machine-local browser state are not included in
+  the reusable integration commit.
+
 - **CI runs the Python suite on Windows** (`.github/workflows/ci.yml` `python-tests-windows`) - every
   job ran on Ubuntu, so a Windows-only failure reached master with all checks green: #480's test
   (an atomic rename that Windows file locking refuses) and #486's (a tool printing non-ASCII JSON

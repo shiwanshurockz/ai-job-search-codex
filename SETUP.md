@@ -1,5 +1,7 @@
 # Setup Guide
 
+**Using Codex in this fork?** Follow [CODEX_SETUP.md](CODEX_SETUP.md) for the Windows launcher, browser setup, and search-to-submission steps. Claude Code installation below is only needed for the original Claude runtime. The Python, Bun, and LaTeX dependency sections remain relevant.
+
 Step-by-step instructions for getting the AI Job Search framework running.
 
 ## 1. Prerequisites

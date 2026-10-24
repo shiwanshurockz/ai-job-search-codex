@@ -4,6 +4,30 @@
 
 # AI Job Search
 
+## Codex fork: start here
+
+This fork adds **Codex support and browser-assisted application submission with a
+final user review**. Start with [the Codex setup and usage guide](CODEX_SETUP.md).
+The upstream Claude Code instructions below remain available for that runtime.
+
+The original `/apply` workflow prepares CVs and cover letters. The new
+[submission workflow](.claude/commands/submit.md) fills a selected employer form,
+uploads approved documents, pauses for your final review, and submits only after
+explicit approval. It records `applied` only after a confirmed receipt.
+
+On an already configured Windows checkout:
+
+```powershell
+.\Start-JobSearch.cmd
+```
+
+Then follow the guide's prompts: **find and rank jobs -> select a job -> choose
+existing or tailored PDFs -> fill the form -> review -> approve submission**.
+Use natural-language prompts in Codex; workflow names such as `/apply` and `/submit`
+are not automatically installed Codex slash commands. See the guide for fresh-clone
+dependencies, browser setup, troubleshooting, and which features this fork adds.
+
+
 *The job search that runs on your machine.*
 
 <p align="center">
